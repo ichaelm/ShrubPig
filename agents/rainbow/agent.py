@@ -7,13 +7,14 @@ implementation.
 
 import tensorflow as tf
 
-from anyrl.algos import DQN
 from anyrl.envs import BatchedGymEnv
 from anyrl.envs.wrappers import BatchedFrameStack
-from anyrl.models import rainbow_models
 from anyrl.rollouts import BatchedPlayer, PrioritizedReplayBuffer, NStepPlayer
 from anyrl.spaces import gym_space_vectorizer
 import gym_remote.exceptions as gre
+
+from dqn_algo import DQN
+from rainbow_dqn_model import rainbow_models
 
 from sonic_util import AllowBacktracking, make_env
 
