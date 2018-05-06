@@ -25,4 +25,6 @@ RUN . ~/venv/bin/activate && \
 
 ADD agent.py .
 
+ADD agentdir/ .
+
 CMD ["python", "-u", "/root/compo/agent.py"]

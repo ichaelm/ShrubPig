@@ -25,22 +25,27 @@ def main():
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True # pylint: disable=E1101
     with tf.Session(config=config) as sess:
-        dqn = DQN(*rainbow_models(sess,
+        online_model, target_model = rainbow_models(sess,
                                   env.action_space.n,
                                   gym_space_vectorizer(env.observation_space),
                                   min_val=-200,
-                                  max_val=200))
+                                  max_val=200)
+        replay_buffer = PrioritizedReplayBuffer(500000, 0.5, 0.4, epsilon=0.1)
+        dqn = DQN(online_model, target_model)
         player = NStepPlayer(BatchedPlayer(env, dqn.online_net), 3)
         optimize = dqn.optimize(learning_rate=1e-4)
-        sess.run(tf.global_variables_initializer())
-        dqn.train(num_steps=2000000, # Make sure an exception arrives before we stop.
+        saver = tf.train.Saver()
+        saver.restore(sess, '/root/compo/model')  # sess.run(tf.global_variables_initializer())
+        while True:
+            dqn.train(num_steps=16384,
                   player=player,
-                  replay_buffer=PrioritizedReplayBuffer(500000, 0.5, 0.4, epsilon=0.1),
+                  replay_buffer=replay_buffer,
                   optimize_op=optimize,
                   train_interval=1,
                   target_interval=8192,
                   batch_size=32,
                   min_buffer_size=20000)
+            saver.save(sess, '/root/compo/out/model')
 
 if __name__ == '__main__':
     try:

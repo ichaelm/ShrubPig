@@ -131,6 +131,8 @@ class DQN:
         next_target_update = target_interval
         next_train_step = train_interval
         start_time = time.time()
+        total_time_playing = 0
+        total_time_learning = 0
         while steps_taken < num_steps:
             if timeout is not None and time.time() - start_time > timeout:
                 return
