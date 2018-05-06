@@ -89,7 +89,7 @@ class DQN:
     # pylint: disable=R0913,R0914
     def train(self,
               num_steps,
-              player,
+              players,
               replay_buffer,
               optimize_op,
               train_interval=1,
@@ -133,10 +133,12 @@ class DQN:
         start_time = time.time()
         total_time_playing = 0
         total_time_learning = 0
+        player_index = 0
         while steps_taken < num_steps:
             if timeout is not None and time.time() - start_time > timeout:
                 return
-            transitions = player.play()
+            transitions = players[player_index].play()
+            player_index = (player_index + 1) % len(players)
             for trans in transitions:
                 if trans['is_last']:
                     handle_ep(trans['episode_step'] + 1, trans['total_reward'])

@@ -16,12 +16,14 @@ import gym_remote.exceptions as gre
 from dqn_algo import DQN
 from rainbow_dqn_model import rainbow_models
 
-from sonic_util import AllowBacktracking, make_env
+from sonic_util import AllowBacktracking, make_envs
 
 def main():
     """Run DQN until the environment throws an exception."""
-    env = AllowBacktracking(make_env(stack=False, scale_rew=False))
-    env = BatchedFrameStack(BatchedGymEnv([[env]]), num_images=4, concat=False)
+    envs = make_envs(stack=False, scale_rew=False)
+    for env in envs:
+        env = AllowBacktracking(env)
+        env = BatchedFrameStack(BatchedGymEnv([[env]]), num_images=4, concat=False)
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True # pylint: disable=E1101
     with tf.Session(config=config) as sess:
@@ -32,13 +34,20 @@ def main():
                                   max_val=200)
         replay_buffer = PrioritizedReplayBuffer(500000, 0.5, 0.4, epsilon=0.1)
         dqn = DQN(online_model, target_model)
-        player = NStepPlayer(BatchedPlayer(env, dqn.online_net), 3)
+        players = []
+        for env in envs:
+            player = NStepPlayer(BatchedPlayer(env, dqn.online_net), 3)
+            players.append(player)
         optimize = dqn.optimize(learning_rate=1e-4)
         saver = tf.train.Saver()
-        saver.restore(sess, '/root/compo/model')  # sess.run(tf.global_variables_initializer())
+        # either
+        # saver.restore(sess, '/root/compo/model')
+        # or
+        sess.run(tf.global_variables_initializer())
+        # end either
         while True:
             dqn.train(num_steps=16384,
-                  player=player,
+                  players=players,
                   replay_buffer=replay_buffer,
                   optimize_op=optimize,
                   train_interval=1,

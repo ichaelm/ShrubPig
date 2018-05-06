@@ -7,12 +7,14 @@ import numpy as np
 
 from baselines.common.atari_wrappers import WarpFrame, FrameStack
 import gym_remote.client as grc
+import os
+import glob
 
-def make_env(stack=True, scale_rew=True):
+def make_env(stack=True, scale_rew=True, sock_path='tmp/sock'):
     """
     Create an environment with some standard wrappers.
     """
-    env = grc.RemoteEnv('tmp/sock')
+    env = grc.RemoteEnv(sock_path)
     env = SonicDiscretizer(env)
     if scale_rew:
         env = RewardScaler(env)
@@ -20,6 +22,11 @@ def make_env(stack=True, scale_rew=True):
     if stack:
         env = FrameStack(env, 4)
     return env
+
+def make_envs(**kwargs):
+    tmp_dirs = glob.glob('tmp*');
+    envs = [make_env(**kwargs, sock_path=os.path.join(tmp_dir, sock)) for tmp_dir in tmp_dirs]
+    return envs
 
 class SonicDiscretizer(gym.ActionWrapper):
     """
