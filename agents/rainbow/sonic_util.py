@@ -24,8 +24,17 @@ def make_env(stack=True, scale_rew=True, sock_path='tmp/sock'):
     return env
 
 def make_envs(**kwargs):
-    tmp_dirs = glob.glob('tmp*');
-    envs = [make_env(**kwargs, sock_path=os.path.join(tmp_dir, sock)) for tmp_dir in tmp_dirs]
+    tmp_dirs = glob.glob('tmp*')
+    if len(tmp_dirs) > 1:
+        tmp_dirs = [x for x in tmp_dirs if x != 'tmp']
+    print('tmp_dirs:')
+    for tmp_dir in tmp_dirs:
+        print(tmp_dir)
+    for_print = glob.glob('tmp*/*')
+    print('contents:')
+    for x in for_print:
+        print(x)
+    envs = [make_env(**kwargs, sock_path=os.path.join(tmp_dir, 'sock')) for tmp_dir in tmp_dirs]
     return envs
 
 class SonicDiscretizer(gym.ActionWrapper):

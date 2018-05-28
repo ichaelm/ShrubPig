@@ -21,18 +21,18 @@ from sonic_util import AllowBacktracking, make_envs
 def main():
     """Run DQN until the environment throws an exception."""
     envs = make_envs(stack=False, scale_rew=False)
-    for env in envs:
-        env = AllowBacktracking(env)
-        env = BatchedFrameStack(BatchedGymEnv([[env]]), num_images=4, concat=False)
+    for i in range(len(envs)):
+        envs[i] = AllowBacktracking(envs[i])
+        envs[i] = BatchedFrameStack(BatchedGymEnv([[envs[i]]]), num_images=4, concat=False)
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True # pylint: disable=E1101
     with tf.Session(config=config) as sess:
         online_model, target_model = rainbow_models(sess,
-                                  env.action_space.n,
-                                  gym_space_vectorizer(env.observation_space),
+                                  envs[0].action_space.n,
+                                  gym_space_vectorizer(envs[0].observation_space),
                                   min_val=-200,
                                   max_val=200)
-        replay_buffer = PrioritizedReplayBuffer(500000, 0.5, 0.4, epsilon=0.1)
+        replay_buffer = PrioritizedReplayBuffer(400000, 0.5, 0.4, epsilon=0.1)
         dqn = DQN(online_model, target_model)
         players = []
         for env in envs:
@@ -41,9 +41,9 @@ def main():
         optimize = dqn.optimize(learning_rate=1e-4)
         saver = tf.train.Saver()
         # either
-        # saver.restore(sess, '/root/compo/model')
+        saver.restore(sess, '/root/compo/model')
         # or
-        sess.run(tf.global_variables_initializer())
+        # sess.run(tf.global_variables_initializer())
         # end either
         while True:
             dqn.train(num_steps=16384,
