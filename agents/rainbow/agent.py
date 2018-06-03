@@ -33,17 +33,50 @@ def main():
                                   min_val=-200,
                                   max_val=200)
         replay_buffer = PrioritizedReplayBuffer(400000, 0.5, 0.4, epsilon=0.1)
-        saver = tf.train.Saver()
+        saver = tf.train.Saver([
+            'online/layer_1/conv2d/kernel:0'
+            'online/layer_1/conv2d/bias:0'
+            'online/layer_2/conv2d/kernel:0'
+            'online/layer_2/conv2d/bias:0'
+            'online/layer_3/conv2d/kernel:0'
+            'online/layer_3/conv2d/bias:0'
+            'target/layer_1/conv2d/kernel:0'
+            'target/layer_1/conv2d/bias:0'
+            'target/layer_2/conv2d/kernel:0'
+            'target/layer_2/conv2d/bias:0'
+            'target/layer_3/conv2d/kernel:0'
+            'target/layer_3/conv2d/bias:0'
+        ])
         # either
         saver.restore(sess, '/root/compo/model')
         # or
-        # sess.run(tf.global_variables_initializer())
+        sess.run(tf.variables_initializer([
+            'online/noisy_layer/weight_mu:0'
+            'online/noisy_layer/bias_mu:0'
+            'online/noisy_layer/weight_sigma:0'
+            'online/noisy_layer/bias_sigma:0'
+            'online/noisy_layer_1/weight_mu:0'
+            'online/noisy_layer_1/bias_mu:0'
+            'online/noisy_layer_1/weight_sigma:0'
+            'online/noisy_layer_1/bias_sigma:0'
+            'online/noisy_layer_2/weight_mu:0'
+            'online/noisy_layer_2/bias_mu:0'
+            'online/noisy_layer_2/weight_sigma:0'
+            'online/noisy_layer_2/bias_sigma:0'
+            'target/noisy_layer/weight_mu:0'
+            'target/noisy_layer/bias_mu:0'
+            'target/noisy_layer/weight_sigma:0'
+            'target/noisy_layer/bias_sigma:0'
+            'target/noisy_layer_1/weight_mu:0'
+            'target/noisy_layer_1/bias_mu:0'
+            'target/noisy_layer_1/weight_sigma:0'
+            'target/noisy_layer_1/bias_sigma:0'
+            'target/noisy_layer_2/weight_mu:0'
+            'target/noisy_layer_2/bias_mu:0'
+            'target/noisy_layer_2/weight_sigma:0'
+            'target/noisy_layer_2/bias_sigma:0'
+        ]))
         # end either
-        variables_names = [v.name for v in tf.trainable_variables()]
-        for k in variables_names:
-            print "Variable: ", k
-        online_model.clear_top_weights()
-        target_model.clear_top_weights()
         dqn = DQN(online_model, target_model)
         players = []
         for env in envs:
