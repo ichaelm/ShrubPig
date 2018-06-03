@@ -34,23 +34,23 @@ def main():
                                   max_val=200)
         replay_buffer = PrioritizedReplayBuffer(400000, 0.5, 0.4, epsilon=0.1)
         saver = tf.train.Saver([
-            'online/layer_1/conv2d/kernel:0'
-            'online/layer_1/conv2d/bias:0'
-            'online/layer_2/conv2d/kernel:0'
-            'online/layer_2/conv2d/bias:0'
-            'online/layer_3/conv2d/kernel:0'
-            'online/layer_3/conv2d/bias:0'
-            'target/layer_1/conv2d/kernel:0'
-            'target/layer_1/conv2d/bias:0'
-            'target/layer_2/conv2d/kernel:0'
-            'target/layer_2/conv2d/bias:0'
-            'target/layer_3/conv2d/kernel:0'
-            'target/layer_3/conv2d/bias:0'
+            'online/layer_1/conv2d/kernel:0',
+            'online/layer_1/conv2d/bias:0',
+            'online/layer_2/conv2d/kernel:0',
+            'online/layer_2/conv2d/bias:0',
+            'online/layer_3/conv2d/kernel:0',
+            'online/layer_3/conv2d/bias:0',
+            'target/layer_1/conv2d/kernel:0',
+            'target/layer_1/conv2d/bias:0',
+            'target/layer_2/conv2d/kernel:0',
+            'target/layer_2/conv2d/bias:0',
+            'target/layer_3/conv2d/kernel:0',
+            'target/layer_3/conv2d/bias:0',
         ])
         # either
         saver.restore(sess, '/root/compo/model')
         # or
-        sess.run(tf.variables_initializer([
+        sess.run(tf.variables_initializer([tf.get_variable(name) for name in [
             'online/noisy_layer/weight_mu:0'
             'online/noisy_layer/bias_mu:0'
             'online/noisy_layer/weight_sigma:0'
@@ -75,7 +75,7 @@ def main():
             'target/noisy_layer_2/bias_mu:0'
             'target/noisy_layer_2/weight_sigma:0'
             'target/noisy_layer_2/bias_sigma:0'
-        ]))
+        ]]))
         # end either
         dqn = DQN(online_model, target_model)
         players = []
