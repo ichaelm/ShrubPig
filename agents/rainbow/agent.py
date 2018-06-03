@@ -33,18 +33,18 @@ def main():
                                   min_val=-200,
                                   max_val=200)
         replay_buffer = PrioritizedReplayBuffer(400000, 0.5, 0.4, epsilon=0.1)
-        dqn = DQN(online_model, target_model)
-        players = []
-        for env in envs:
-            player = NStepPlayer(BatchedPlayer(env, dqn.online_net), 3)
-            players.append(player)
-        optimize = dqn.optimize(learning_rate=1e-4)
         saver = tf.train.Saver()
         # either
         saver.restore(sess, '/root/compo/model')
         # or
         # sess.run(tf.global_variables_initializer())
         # end either
+        dqn = DQN(online_model, target_model)
+        players = []
+        for env in envs:
+            player = NStepPlayer(BatchedPlayer(env, dqn.online_net), 3)
+            players.append(player)
+        optimize = dqn.optimize(learning_rate=1e-4)
         while True:
             dqn.train(num_steps=16384,
                   players=players,
