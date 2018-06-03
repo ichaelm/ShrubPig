@@ -282,6 +282,17 @@ class NatureDistQNetwork:
         print('float32 tf.shape(obs_batch) = %s' % str(tf.shape(obs_batch)))
         return nature_cnn(obs_batch, dense=self.dense)
 
+    def clear_top_weights(self):
+        with tf.variable_scope(name):
+            self.step_obs_ph = tf.placeholder(self.input_dtype,
+                                              shape=(None,) + obs_vectorizer.out_shape)
+            print('uint8 tf.shape(self.step_obs_ph) = %s' % str(tf.shape(self.step_obs_ph)))
+            self.step_base_out = self.base(self.step_obs_ph)
+            log_probs = self.value_func(self.step_base_out)
+            values = self.dist.mean(log_probs)
+            self.step_outs = (values, log_probs)
+        self.variables = [v for v in tf.trainable_variables() if v not in old_vars]
+
 
 class ActionDist:
     """
