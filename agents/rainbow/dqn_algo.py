@@ -84,7 +84,8 @@ class DQN:
           epsilon: the Adam epsilon.
         """
         optim = tf.train.AdamOptimizer(learning_rate=learning_rate, epsilon=epsilon, **adam_kwargs)
-        return optim.minimize(self.loss, var_list=[tf.get_variable(name) for name in [
+        with tf.variable_scope(tf.get_variable_scope(), reuse=tf.AUTO_REUSE):
+          return optim.minimize(self.loss, var_list=[tf.get_variable(name) for name in [
                         'online/noisy_layer/weight_mu',
                         'online/noisy_layer/bias_mu',
                         'online/noisy_layer/weight_sigma',
@@ -111,7 +112,7 @@ class DQN:
                         'target/noisy_layer_2/bias_sigma',
             
 
-        ]])
+           ]])
 
     # pylint: disable=R0913,R0914
     def train(self,
