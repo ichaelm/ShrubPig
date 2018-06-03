@@ -41,7 +41,7 @@ def main():
         # end either
         variables_names = [v.name for v in tf.trainable_variables()]
         for k in variables_names:
-            print "Variable: ", k
+            print(k)
         online_model.clear_top_weights()
         target_model.clear_top_weights()
         dqn = DQN(online_model, target_model)
