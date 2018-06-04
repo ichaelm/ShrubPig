@@ -76,7 +76,8 @@ def main():
             'target/noisy_layer_2/weight_sigma',
             'target/noisy_layer_2/bias_sigma',
         ]]))
-        # end either
+
+# end either
         dqn = DQN(online_model, target_model)
         players = []
         for env in envs:
