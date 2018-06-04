@@ -110,6 +110,18 @@ class DQN:
                         'target/noisy_layer_2/bias_mu',
                         'target/noisy_layer_2/weight_sigma',
                         'target/noisy_layer_2/bias_sigma',
+                        'online/layer_1b/conv2d/kernel',
+                        'online/layer_1b/conv2d/bias',
+                        'online/layer_2b/conv2d/kernel',
+                        'online/layer_2b/conv2d/bias',
+                        'online/layer_3b/conv2d/kernel',
+                        'online/layer_3b/conv2d/bias',
+                        'target/layer_1b/conv2d/kernel',
+                        'target/layer_1b/conv2d/bias',
+                        'target/layer_2b/conv2d/kernel',
+                        'target/layer_2b/conv2d/bias',
+                        'target/layer_3b/conv2d/kernel',
+                        'target/layer_3b/conv2d/bias',
             
 
            ]])
