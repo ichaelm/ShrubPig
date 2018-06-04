@@ -57,8 +57,18 @@ def nature_cnn(obs_batch, dense=tf.layers.dense):
     with tf.variable_scope('layer_3'):
         cnn_3 = tf.layers.conv2d(cnn_2, 64, 3, 1, **conv_kwargs)
         print('float32 cnn_3 %s' % str(tf.shape(cnn_3)))
-    flat_size = product([x.value for x in cnn_3.get_shape()[1:]])
-    flat_in = tf.reshape(cnn_3, (tf.shape(cnn_3)[0], int(flat_size)))
+    with tf.variable_scope('layer_1b'):
+        cnn_1b = tf.layers.conv2d(obs_batch, 32, 8, 4, **conv_kwargs)
+        print('float32 cnn_1b %s' % str(tf.shape(cnn_1b)))
+    with tf.variable_scope('layer_2b'):
+        cnn_2b = tf.layers.conv2d(cnn_1b, 64, 4, 2, **conv_kwargs)
+        print('float32 cnn_2b %s' % str(tf.shape(cnn_2b)))
+    with tf.variable_scope('layer_3b'):
+        cnn_3b = tf.layers.conv2d(cnn_2b, 64, 3, 1, **conv_kwargs)
+        print('float32 cnn_3b %s' % str(tf.shape(cnn_3b)))
+    cnn_final = tf.concat([cnn_3, cnn_3b], 1)
+    flat_size = product([x.value for x in cnn_final.get_shape()[1:]])
+    flat_in = tf.reshape(cnn_final, (tf.shape(cnn_final)[0], int(flat_size)))
     print('float32 flat_in %s' % str(tf.shape(flat_in)))
     return dense(flat_in, 512, **conv_kwargs)
 
